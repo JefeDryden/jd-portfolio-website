@@ -93,10 +93,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const gameAspectRatio = 200 / 85; // NHL rink dimensions
             let canvasWidth, canvasHeight;
             
-            if (containerWidth / containerHeight > gameAspectRatio) {
+            // Always maintain the exact aspect ratio
+            // Fit within container while preserving ratio
+            const containerAspectRatio = containerWidth / containerHeight;
+            
+            if (containerAspectRatio > gameAspectRatio) {
+                // Container is wider than game ratio - fit by height
                 canvasHeight = containerHeight * 0.8;
                 canvasWidth = canvasHeight * gameAspectRatio;
             } else {
+                // Container is taller than game ratio - fit by width
                 canvasWidth = containerWidth * 0.9;
                 canvasHeight = canvasWidth / gameAspectRatio;
             }

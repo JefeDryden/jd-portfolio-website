@@ -67,10 +67,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Hero Section */
 .hero-section {
-    height: 100vh;
+    min-height: 100vh;
     padding-top: 76px;
     background: var(--bg-light);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .hero-left {
@@ -137,7 +138,8 @@ h1, h2, h3, h4, h5, h6 {
 .game-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 76px); /* Account for navbar */
+    min-height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,6 +221,8 @@ h1, h2, h3, h4, h5, h6 {
     display: block;
     border-radius: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    object-fit: contain; /* Maintain aspect ratio */
+    aspect-ratio: 200 / 85; /* Force NHL rink ratio */
 }
 
 /* Buttons */
@@ -592,6 +596,44 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Responsive Design */
+/* For landscape orientation */
+@media (orientation: landscape) and (max-height: 800px) {
+    .hero-section {
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .game-container {
+        height: 80vh;
+        min-height: 300px;
+        padding: 10px;
+    }
+    
+    #gameCanvas {
+        max-width: calc(80vh * 2.353); /* Height * (200/85) ratio */
+        max-height: 80vh;
+        width: auto !important;
+        height: auto !important;
+    }
+}
+
+/* For short screens (height-based) */
+@media (max-height: 800px) {
+    .hero-section {
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .game-container {
+        height: 60vh;
+        min-height: 350px;
+    }
+    
+    #gameCanvas {
+        max-height: 50vh;
+    }
+}
+
 @media (min-width: 992px) and (max-width: 1199px) {
     .hero-right {
         min-width: 400px;
