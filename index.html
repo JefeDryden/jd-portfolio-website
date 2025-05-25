@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Hockey Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="hockey-rink"></canvas>
+        <div id="score-board">
+            <div class="team-score red-team">
+                <span class="team-name">RED</span>
+                <span class="score">0</span>
+            </div>
+            <div class="team-score blue-team">
+                <span class="team-name">BLUE</span>
+                <span class="score">0</span>
+            </div>
+        </div>
+        <div id="game-overlay">
+            <h1>CURSOR HOCKEY</h1>
+            <p>Move your cursor to control the puck</p>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
