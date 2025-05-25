@@ -130,7 +130,8 @@ h1, h2, h3, h4, h5, h6 {
 .hero-right {
     background: linear-gradient(135deg, var(--ice-blue) 0%, #bbdefb 100%);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    min-height: 500px;
 }
 
 .game-container {
@@ -591,6 +592,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Responsive Design */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .hero-right {
+        min-width: 400px;
+    }
+    
+    .game-container {
+        min-height: 400px;
+    }
+}
+
 @media (max-width: 991px) {
     .hero-left, .hero-right {
         min-height: 50vh;

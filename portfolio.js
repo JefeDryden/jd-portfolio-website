@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const containerWidth = gameContainer.clientWidth;
             const containerHeight = gameContainer.clientHeight;
             
+            console.log(`Resizing canvas - Container: ${containerWidth}x${containerHeight}, Window: ${window.innerWidth}x${window.innerHeight}`);
+            
             // Maintain NHL rink aspect ratio (200:85)
             const gameAspectRatio = 200 / 85; // NHL rink dimensions
             let canvasWidth, canvasHeight;
@@ -98,6 +100,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 canvasWidth = containerWidth * 0.9;
                 canvasHeight = canvasWidth / gameAspectRatio;
             }
+            
+            // Ensure minimum size
+            if (canvasWidth < 200 || canvasHeight < 85) {
+                console.warn(`Canvas too small: ${canvasWidth}x${canvasHeight}. Setting minimum size.`);
+                canvasWidth = Math.max(200, canvasWidth);
+                canvasHeight = canvasWidth / gameAspectRatio;
+            }
+            
+            console.log(`Setting canvas size: ${canvasWidth}x${canvasHeight}`);
             
             // Set both actual canvas dimensions and display size
             canvas.width = canvasWidth;
