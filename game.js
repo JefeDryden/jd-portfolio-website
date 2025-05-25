@@ -1,13 +1,14 @@
 class HockeyGame {
     constructor() {
         console.log('HockeyGame constructor called');
-        this.canvas = document.getElementById('hockey-rink');
+        this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.mouseX = this.canvas.width / 2 || 0;
         this.mouseY = this.canvas.height / 2 || 0;
         this.players = [];
         this.puckTrail = [];
         this.scores = { red: 0, blue: 0 };
+        this.scale = 0; // Initialize scale to 0
         console.log('Initial scores:', this.scores);
         
         // Puck physics
@@ -31,12 +32,36 @@ class HockeyGame {
         this.countdown = 0;
         this.countdownStartTime = 0;
         this.scoringTeam = null;
+        this.isPaused = false;
+        this.animationId = null;
         
         this.init();
     }
 
     init() {
         this.setupCanvas();
+        
+        // Check if canvas will be externally resized (in portfolio)
+        const isPortfolio = this.canvas.closest('.game-wrapper') !== null;
+        
+        if (isPortfolio) {
+            // Wait for external resize to complete
+            const checkCanvasReady = setInterval(() => {
+                if (this.canvas.width > 0 && this.canvas.height > 0 && this.scale > 0) {
+                    clearInterval(checkCanvasReady);
+                    this.initializeGame();
+                }
+            }, 50);
+        } else {
+            // Initialize immediately for standalone game
+            this.initializeGame();
+        }
+    }
+    
+    initializeGame() {
+        // Ensure scale is set from current canvas dimensions
+        this.scale = this.canvas.width / 200;
+        console.log(`Game initializing with canvas: ${this.canvas.width}x${this.canvas.height}, scale: ${this.scale}`);
         
         // Initialize puck and mouse at center ice after canvas is set up
         this.puck.x = this.canvas.width / 2;
@@ -53,17 +78,23 @@ class HockeyGame {
 
     setupCanvas() {
         const resize = () => {
-            // NHL rink is 200ft x 85ft (ratio: 2.35:1)
+            // Skip resize if canvas is being controlled externally (e.g., in portfolio)
+            if (this.canvas.dataset.externalResize === 'true') {
+                return;
+            }
+            
+            // NHL rink is 200ft x 85ft
+            const NHL_ASPECT_RATIO = 200 / 85;
             const maxWidth = Math.min(window.innerWidth * 0.9, 1200);
             const maxHeight = Math.min(window.innerHeight * 0.8, 600);
             
             // Maintain NHL rink aspect ratio
-            if (maxWidth / maxHeight > 2.35) {
+            if (maxWidth / maxHeight > NHL_ASPECT_RATIO) {
                 this.canvas.height = maxHeight;
-                this.canvas.width = maxHeight * 2.35;
+                this.canvas.width = maxHeight * NHL_ASPECT_RATIO;
             } else {
                 this.canvas.width = maxWidth;
-                this.canvas.height = maxWidth / 2.35;
+                this.canvas.height = maxWidth / NHL_ASPECT_RATIO;
             }
             
             // Scale factor from NHL dimensions (200ft x 85ft) to canvas pixels
@@ -82,8 +113,8 @@ class HockeyGame {
 
     createPlayers() {
         const colors = {
-            red: '#ff7f7f',
-            blue: '#87ceeb'
+            red: '#3949ab',  // Secondary color (lighter navy)
+            blue: '#64b5f6'  // Accent color (ice blue)
         };
 
         for (let team of ['red', 'blue']) {
@@ -100,7 +131,7 @@ class HockeyGame {
                     vy: 0,
                     team: team,
                     color: colors[team],
-                    size: 3 * this.scale, // Scale based on rink size (3ft diameter)
+                    size: 4 * this.scale, // Scale based on rink size (3ft diameter)
                     speed: 0.5 * this.scale, // Scale speed (0.5 ft/frame)
                     baseSpeed: 0.5 * this.scale,
                     angle: 0,
@@ -808,7 +839,7 @@ class HockeyGame {
 
     addReplacementPlayer(team) {
         const benchPos = this.getBenchPosition(team);
-        const colors = { red: '#ff7f7f', blue: '#87ceeb' };
+        const colors = { red: '#3949ab', blue: '#64b5f6' };
         
         // Add slight variation to bench entry position
         const entryX = benchPos.x + (Math.random() - 0.5) * 30;
@@ -821,7 +852,7 @@ class HockeyGame {
             vy: 0,
             team: team,
             color: colors[team],
-            size: 3 * this.scale, // Scale based on rink size
+            size: 4 * this.scale, // Scale based on rink size
             speed: 0.5 * this.scale,
             baseSpeed: 0.5 * this.scale,
             angle: 0,
@@ -893,7 +924,7 @@ class HockeyGame {
     }
 
     addReplacementPlayerAtNormalPosition(team) {
-        const colors = { red: '#ff7f7f', blue: '#87ceeb' };
+        const colors = { red: '#3949ab', blue: '#64b5f6' };
         
         // Position like original players (similar to createPlayers logic)
         const x = team === 'red' 
@@ -911,7 +942,7 @@ class HockeyGame {
             vy: 0,
             team: team,
             color: colors[team],
-            size: 3 * this.scale, // Scale based on rink size
+            size: 4 * this.scale, // Scale based on rink size
             speed: 0.5 * this.scale,
             baseSpeed: 0.5 * this.scale,
             angle: 0,
@@ -1325,14 +1356,11 @@ class HockeyGame {
         this.ctx.clip();
 
         // Ice surface inside clipping area
-        const iceGradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
-        iceGradient.addColorStop(0, '#1a1a2e');
-        iceGradient.addColorStop(1, '#0f0f1e');
-        this.ctx.fillStyle = iceGradient;
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw rink outline
-        this.ctx.strokeStyle = '#4a4a5a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 3;
         this.ctx.beginPath();
         this.ctx.moveTo(cornerRadius, 0);
@@ -1348,7 +1376,7 @@ class HockeyGame {
         this.ctx.stroke();
 
         // Center red line
-        this.ctx.strokeStyle = '#6a6a7a';
+        this.ctx.strokeStyle = '#3949ab';
         this.ctx.lineWidth = 6;
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width / 2, 0);
@@ -1356,7 +1384,7 @@ class HockeyGame {
         this.ctx.stroke();
 
         // Blue lines (64ft from goal lines, which are 11ft from ends)
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 6;
         const blueLineDistance = 75 * this.scale; // 64 + 11 = 75ft from ends
         
@@ -1371,7 +1399,7 @@ class HockeyGame {
         this.ctx.stroke();
 
         // Goal lines (11ft from ends)
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 2;
         const goalLineDistance = 11 * this.scale;
         
@@ -1389,8 +1417,8 @@ class HockeyGame {
 
         // Goal creases (6ft radius semicircles)
         const creaseRadius = 6 * this.scale;
-        this.ctx.fillStyle = '#2a3545';
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 2;
         
         // Left crease
@@ -1408,7 +1436,7 @@ class HockeyGame {
         this.ctx.stroke();
 
         // Center ice circle (15ft radius for face-off circle)
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, 15 * this.scale, 0, Math.PI * 2);
@@ -1425,7 +1453,7 @@ class HockeyGame {
         const faceoffY1 = 22 * this.scale; // 22ft from centerline
         const faceoffY2 = this.canvas.height - faceoffY1;
         
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 2;
         
         // Left zone circles
@@ -1460,7 +1488,7 @@ class HockeyGame {
         this.ctx.fill();
 
         // Hash marks on face-off circles (only zone circles, not center)
-        this.ctx.strokeStyle = '#5a5a6a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 2;
         const hashLength = 2 * this.scale; // Shorter hash marks
         const hashSpacing = 3 * this.scale; // Spacing between the two hash marks
@@ -1531,7 +1559,7 @@ class HockeyGame {
         const goalRadius = goalDepth / 2; // Rounded back corners
         
         // Draw goal fills first
-        this.ctx.fillStyle = '#2a2a3a';
+        this.ctx.fillStyle = '#ffffff';
         
         // Left goal fill
         this.ctx.beginPath();
@@ -1557,7 +1585,7 @@ class HockeyGame {
         
         // Goal mesh pattern with clipping for rounded shape
         this.ctx.save();
-        this.ctx.strokeStyle = '#4a4a5a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 1;
         const meshSize = 0.5 * this.scale;
         
@@ -1589,7 +1617,7 @@ class HockeyGame {
         
         // Right goal mesh with clipping (matching updated goal style)
         this.ctx.save();
-        this.ctx.strokeStyle = '#4a4a5a';
+        this.ctx.strokeStyle = '#1a237e';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
         this.ctx.moveTo(this.canvas.width - goalLineDistance, goalY);
@@ -1617,7 +1645,7 @@ class HockeyGame {
         this.ctx.restore();
         
         // Draw goal outlines on top
-        this.ctx.strokeStyle = '#6a6a7a';
+        this.ctx.strokeStyle = '#3949ab';
         this.ctx.lineWidth = 3;
         
         // Left goal outline
@@ -1789,7 +1817,7 @@ class HockeyGame {
                 // Check if player is actively moving towards puck (making a play)
                 const playerMovingToPuck = (player.actualVx * dx + player.actualVy * dy) > 0; // Positive means moving toward puck
                 const playerSpeed = Math.sqrt(player.actualVx * player.actualVx + player.actualVy * player.actualVy);
-                const isActivePlay = playerMovingToPuck && playerSpeed > 2;
+                const isActivePlay = playerMovingToPuck && playerSpeed > (0.4 * this.scale);
                 
                 // 10% chance to pass through if not an active play
                 if (!isActivePlay && Math.random() < 0.1) {
@@ -1955,15 +1983,15 @@ class HockeyGame {
         this.puckTrail.forEach((point, index) => {
             this.ctx.beginPath();
             this.ctx.arc(point.x, point.y, 5 * (index / this.puckTrail.length), 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${0.2 * (index / this.puckTrail.length)})`;
+            this.ctx.fillStyle = `rgba(0, 0, 0, ${0.2 * (index / this.puckTrail.length)})`;
             this.ctx.fill();
         });
 
         // Draw puck with different style if not controlled
         const gradient = this.ctx.createRadialGradient(this.puck.x, this.puck.y, 0, this.puck.x, this.puck.y, 15);
         if (this.puck.controlled) {
-            gradient.addColorStop(0, 'white');
-            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
+            gradient.addColorStop(0, 'black');
+            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.5)');
             gradient.addColorStop(1, 'transparent');
         } else {
             gradient.addColorStop(0, '#ffff00');
@@ -1977,11 +2005,25 @@ class HockeyGame {
         this.ctx.fill();
         
         // Draw puck outline
-        this.ctx.strokeStyle = this.puck.controlled ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.5)';
+        this.ctx.strokeStyle = this.puck.controlled ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.5)';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
         this.ctx.arc(this.puck.x, this.puck.y, this.puck.radius, 0, Math.PI * 2);
         this.ctx.stroke();
+    }
+
+    pause() {
+        this.isPaused = true;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+    }
+
+    resume() {
+        if (this.isPaused) {
+            this.isPaused = false;
+            this.animate();
+        }
     }
 
     animate() {
@@ -2001,8 +2043,17 @@ class HockeyGame {
             console.error('Current scores when error occurred:', this.scores);
         }
 
-        requestAnimationFrame(() => this.animate());
+        if (!this.isPaused) {
+            this.animationId = requestAnimationFrame(() => this.animate());
+        }
     }
 }
 
-const game = new HockeyGame();
+// Initialize game when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.gameInstance = new HockeyGame();
+    });
+} else {
+    window.gameInstance = new HockeyGame();
+}

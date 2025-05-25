@@ -8,9 +8,6 @@ body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
     color: white;
-    overflow: hidden;
-    height: 100vh;
-    cursor: none;
 }
 
 #game-container {
@@ -59,13 +56,13 @@ body {
 }
 
 .red-team .team-name {
-    color: #ff7f7f;
-    text-shadow: 0 0 10px #ff7f7f;
+    color: #3949ab;
+    text-shadow: 0 0 10px #3949ab;
 }
 
 .blue-team .team-name {
-    color: #87ceeb;
-    text-shadow: 0 0 10px #87ceeb;
+    color: #64b5f6;
+    text-shadow: 0 0 10px #64b5f6;
 }
 
 #game-overlay {
