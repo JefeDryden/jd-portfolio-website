@@ -12,11 +12,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="portfolio-styles.css">
+    <link rel="stylesheet" href="technical-styles.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -44,6 +45,8 @@
             <div class="row h-100">
                 <!-- Left Side - Professional Intro -->
                 <div class="col-lg-6 hero-left d-flex align-items-center">
+                    <div class="blob-shape" style="width: 300px; height: 300px; background: var(--primary-gradient); top: 10%; left: 5%;"></div>
+                    <div class="blob-shape" style="width: 200px; height: 200px; background: var(--accent-gradient); bottom: 10%; right: 5%;"></div>
                     <div class="hero-content">
                         <div class="hero-photo-container">
                             <img src="img/personal.jpg" alt="Jeff Dryden" class="hero-photo" onclick="openImageModal(this)">
@@ -103,18 +106,45 @@
             </div>
             <div class="row mt-5">
                 <div class="col-lg-4 mb-4">
-                    <div class="feature-card">
+                    <div class="feature-card asymmetric-card">
                         <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
+                            <svg viewBox="0 0 100 100" width="40" height="40">
+                                <defs>
+                                    <linearGradient id="iconGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M20,70 L30,40 L45,50 L60,30 L75,45 L85,20 L85,70 Z" fill="url(#iconGradient1)" opacity="0.3"/>
+                                <polyline points="20,70 30,40 45,50 60,30 75,45 85,20" stroke="url(#iconGradient1)" stroke-width="3" fill="none"/>
+                                <circle cx="30" cy="40" r="4" fill="url(#iconGradient1)"/>
+                                <circle cx="45" cy="50" r="4" fill="url(#iconGradient1)"/>
+                                <circle cx="60" cy="30" r="4" fill="url(#iconGradient1)"/>
+                                <circle cx="75" cy="45" r="4" fill="url(#iconGradient1)"/>
+                            </svg>
                         </div>
                         <h3>Data Analysis</h3>
                         <p>Expert in statistical analysis, predictive modeling, and extracting insights from complex datasets. Data-driven and continually improving.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 mb-4">
-                    <div class="feature-card">
+                    <div class="feature-card asymmetric-card">
                         <div class="feature-icon">
-                            <i class="fas fa-flask"></i>
+                            <svg viewBox="0 0 100 100" width="40" height="40">
+                                <defs>
+                                    <linearGradient id="iconGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <ellipse cx="50" cy="60" rx="15" ry="25" fill="url(#iconGradient2)" opacity="0.3"/>
+                                <ellipse cx="50" cy="60" rx="15" ry="25" stroke="url(#iconGradient2)" stroke-width="3" fill="none"/>
+                                <circle cx="50" cy="35" r="8" fill="url(#iconGradient2)"/>
+                                <path d="M35,20 Q50,10 65,20" stroke="url(#iconGradient2)" stroke-width="2" fill="none"/>
+                                <circle cx="50" cy="60" r="5" fill="url(#iconGradient2)"/>
+                                <circle cx="45" cy="50" r="3" fill="url(#iconGradient2)" opacity="0.6"/>
+                                <circle cx="55" cy="55" r="4" fill="url(#iconGradient2)" opacity="0.6"/>
+                            </svg>
                         </div>
                         <h3>Chemical Engineering</h3>
                         <p>Master's in Chemical Engineering with expertise in renewable energy, process design, and sustainable production systems.</p>
@@ -377,5 +407,6 @@
     
     <!-- Portfolio Scripts -->
     <script src="portfolio.js"></script>
+    <script src="technical-effects.js"></script>
 </body>
 </html>
